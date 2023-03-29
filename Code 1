@@ -1,5 +1,3 @@
-package application;
-
 import javafx.application.Application;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
@@ -54,46 +52,47 @@ public class MyResumeApp extends Application {
         // Resume tab
         // Create grid pane for Resume tab
         GridPane resumeGridPane = new GridPane();
-        resumeGridPane.setHgap(10);
-        resumeGridPane.setVgap(10);
-        resumeGridPane.setPadding(new Insets(20, 20, 20, 20));
+        resumeGridPane.setHgap(5);
+        resumeGridPane.setVgap(0);
+        resumeGridPane.setPadding(new Insets(10, 10, 10, 10));
 
         // Add labels and text fields to Resume tab
         firstNameTextField = new TextField();
         firstNameTextField.setPromptText("First Name");
-        resumeGridPane.add(firstNameTextField, 0, 0);
 
         lastNameTextField = new TextField();
         lastNameTextField.setPromptText("Last Name");
-        resumeGridPane.add(lastNameTextField, 1, 0);
-
+        
+        HBox namesTextField = new HBox();
+        namesTextField.getChildren().addAll(firstNameTextField, lastNameTextField);
+        
         addressTextField = new TextField();
-        addressTextField.setPromptText("Address");
-        resumeGridPane.add(addressTextField, 0, 1, 2, 1);
+        addressTextField.setPromptText("Address (123 Your Street)");
 
+        HBox locationTextField = new HBox();
+        
         cityTextField = new TextField();
         cityTextField.setPromptText("City");
-        resumeGridPane.add(cityTextField, 0, 2);
 
-        //resumeGridPane.add(new Label("State:"), 2, 2);
         stateTextField = new TextField();
         stateTextField.setPromptText("State");
-        resumeGridPane.add(stateTextField, 1, 2);
 
-        //resumeGridPane.add(new Label("Zip Code:"), , 2);
         zipCodeTextField = new TextField();
         zipCodeTextField.setPromptText("Zip Code");
-        resumeGridPane.add(zipCodeTextField, 2, 2);
-
-        //resumeGridPane.add(new Label("Phone:"), 0, 3);
+        
+        locationTextField.getChildren().addAll(cityTextField, stateTextField, zipCodeTextField);
+ 
         phoneTextField = new TextField();
         phoneTextField.setPromptText("Phone");
-        resumeGridPane.add(phoneTextField, 0, 3);
 
-        //resumeGridPane.add(new Label("Email:"), 2, 3);
         emailTextField = new TextField();
         emailTextField.setPromptText("Email");
-        resumeGridPane.add(emailTextField, 0, 4);
+
+        
+        VBox personalDetails = new VBox();
+        personalDetails.setPadding(new Insets(0, 350, 0, 0));
+        personalDetails.getChildren().addAll(namesTextField, addressTextField, locationTextField, phoneTextField, emailTextField);
+        resumeGridPane.add(personalDetails, 0, 1,5,1);
        /////////////////////////////////////////////////////////////////
         resumeGridPane.add(new Label("SKILLS"), 0, 5);
         skillsTextArea = new TextArea();
@@ -132,7 +131,7 @@ public class MyResumeApp extends Application {
         resumeGridPane.add(seeDetails3Button, 5, 10);
         resumeGridPane.setHalignment(seeDetails3Button, HPos.RIGHT);
 
-        resumeGridPane.add(new Label("AWARDS/ PROJECTS/ EXTRACURRICULAR"), 0, 11);       ///ADD RADIO BUTTON TO CHOOSE ONE OF THE TITLES
+        resumeGridPane.add(new Label("AWARDS/ PROJECTS/ EXTRACURRICULAR"), 0, 11);       ///ADD Drop down menu TO CHOOSE ONE OF THE TITLES
         otherTextArea = new TextArea();
         otherTextArea.setPrefHeight(200);
         resumeGridPane.add(otherTextArea, 0, 12, 5, 1);
@@ -152,6 +151,7 @@ public class MyResumeApp extends Application {
         coverLetterContent.setSpacing(10);
         HBox coverLetterAddress = new HBox();
         HBox coverLetterName = new HBox();
+        VBox details = new VBox();
         
         cfirstNameTextField = new TextField();
         cfirstNameTextField.setPromptText("First Name");
@@ -162,7 +162,7 @@ public class MyResumeApp extends Application {
         ccityTextField = new TextField();
         ccityTextField.setPromptText("City");
         cstateTextField = new TextField();
-        cstateTextField.setPromptText("State");
+        cstateTextField.setPromptText("State (GA)");
         czipCodeTextField = new TextField();
         czipCodeTextField.setPromptText("Zip Code");
         cphoneTextField = new TextField();
@@ -170,16 +170,36 @@ public class MyResumeApp extends Application {
         cemailTextField = new TextField();
         cemailTextField.setPromptText("Email");
         coverLetterAddress.getChildren().addAll(cemailTextField,cphoneTextField,ccityTextField,cstateTextField,czipCodeTextField);
-        		
-        TextField recipientField = new TextField();
-        recipientField.setPromptText("Recipient");
-        TextField subjectField = new TextField();
-        subjectField.setPromptText("Subject");
+        
+        details.getChildren().addAll(coverLetterName, coverLetterAddress);
+        
+        TextField dateField = new TextField();
+        dateField.setPromptText("Date (Month Day, 20XX)");
+        TextField employerNameField = new TextField();
+        employerNameField.setPromptText("Employer Name (Mr. John Doe)");
+        TextField employerPositionField = new TextField();
+        employerPositionField.setPromptText("Employer Position");
+        TextField employerCompanyField = new TextField();
+        employerCompanyField.setPromptText("Company/ Organization");
+        TextField addressField = new TextField();
+        addressField.setPromptText("Address (123 Your Street)");
+        TextField phoneNumberField = new TextField();
+        phoneNumberField.setPromptText("Phone");
+        TextField emailField = new TextField();
+        emailField.setPromptText("Email");
+        emailField.setPrefColumnCount(1);
+        
+        VBox employerDetails = new VBox();
+        employerDetails.getChildren().addAll(employerNameField, employerPositionField, employerCompanyField, 
+        		addressField, phoneNumberField, emailField);
+        employerDetails.setPadding(new Insets(0, 450, 0, 0));
         TextArea coverLetterTextArea = new TextArea();
-        coverLetterTextArea.setPromptText("Write your cover letter here");
-        coverLetterTextArea.setPrefRowCount(10);
+        coverLetterTextArea.setPromptText("Dear Mr. John, \r\rWrite your cover letter here.");
+        coverLetterTextArea.setPrefRowCount(20);
+        //coverLetterTextArea.setPrefHeight(200);
         Button upload2Button = new Button("Upload");
-        coverLetterContent.getChildren().addAll(coverLetterName,coverLetterAddress, recipientField, subjectField, coverLetterTextArea,upload2Button);
+        dateField.setPadding(new Insets(10, 500, 0, 0))----------- decrease width by creating a v or hbox
+        coverLetterContent.getChildren().addAll(details, dateField, employerDetails, coverLetterTextArea);
         coverLetterName.setAlignment(Pos.BOTTOM_CENTER);
         coverLetterTab.setContent(coverLetterContent);
 
@@ -201,7 +221,7 @@ public class MyResumeApp extends Application {
         tabPane.getTabs().addAll(resumeTab, coverLetterTab, detailsTab);
 
         // Create scene and show stage
-        Scene scene = new Scene(tabPane, 750, 650);
+        Scene scene = new Scene(tabPane, 700, 650);
         primaryStage.setScene(scene);
         primaryStage.setTitle("My Resume App");
         primaryStage.show();
