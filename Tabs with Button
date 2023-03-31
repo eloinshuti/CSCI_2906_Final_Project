@@ -1,0 +1,71 @@
+import javafx.application.Application;
+import javafx.beans.binding.Bindings;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
+import javafx.collections.ObservableList;
+import javafx.scene.Scene;
+import javafx.scene.control.Button;
+import javafx.scene.control.Tab;
+import javafx.scene.control.TabPane;
+import javafx.scene.layout.BorderPane;
+import javafx.stage.Stage;
+import javafx.application.Application;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
+import javafx.scene.Scene;
+import javafx.scene.control.Button;
+import javafx.scene.control.Tab;
+import javafx.scene.control.TabPane;
+import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
+import javafx.stage.Stage;
+
+public class TabPaneWithAddTab extends Application {
+
+  @Override
+  public void start(Stage primaryStage) {
+    final TabPane tabPane = new TabPane();
+    final Tab newTab = new Tab("+");
+    newTab.setClosable(false);Button upload2Button = new Button("Upload");
+    tabPane.getTabs().add(newTab);
+    createAndSelectNewTab(tabPane, "First tab").setContent(upload2Button);;
+    
+//upload2Button
+    
+    upload2Button.setOnAction(new EventHandler<ActionEvent>() {
+        @Override
+        public void handle(ActionEvent event) {
+        	createAndSelectNewTab(tabPane, "Tab " + (tabPane.getTabs().size()));
+        }
+    });
+    tabPane.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Tab>() {
+      @Override
+      public void changed(ObservableValue<? extends Tab> observable,
+          Tab oldSelectedTab, Tab newSelectedTab) {
+        if (newSelectedTab == newTab) {
+          createAndSelectNewTab(tabPane, "Tab " + (tabPane.getTabs().size()));
+        }
+      }
+    });
+
+    final BorderPane root = new BorderPane();
+    root.setCenter(tabPane);
+    primaryStage.setScene(new Scene(root, 600, 400));
+    primaryStage.show();
+  }
+
+  private Tab createAndSelectNewTab(final TabPane tabPane, final String title) {
+    Tab tab = new Tab(title);
+    final ObservableList<Tab> tabs = tabPane.getTabs();
+    tab.closableProperty().bind(Bindings.size(tabs).greaterThan(2));
+    tabs.add(tabs.size() - 1, tab);
+    tabPane.getSelectionModel().select(tab);
+    return tab;
+  }
+
+  public static void main(String[] args) {
+    launch(args);
+  }
+}
