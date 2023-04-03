@@ -1,0 +1,80 @@
+package application;
+
+import com.itextpdf.text.Document;
+import com.itextpdf.text.DocumentException;
+import com.itextpdf.text.PageSize;
+import com.itextpdf.text.Paragraph;
+import com.itextpdf.text.pdf.PdfWriter;
+import java.io.*;
+import javafx.application.*;
+import javafx.event.*;
+import javafx.scene.*;
+import javafx.scene.control.*;
+import javafx.scene.layout.*;
+import javafx.stage.*;
+
+public class ResumeViewer extends Application {
+
+    private TextArea resumeArea;
+    private Button downloadTextButton;
+    private Button downloadPdfButton;
+
+    public static void main(String[] args) {
+        launch(args);
+    }
+
+    public void start(Stage primaryStage) {
+        resumeArea = new TextArea("Name: John Doe\nAge: 30\nEducation: Bachelor's Degree in Computer Science\nExperience: 5 years in software development");
+        resumeArea.setEditable(false);
+
+        downloadTextButton = new Button("Download as Text");
+        downloadTextButton.setOnAction(this::handleDownloadText);
+
+        downloadPdfButton = new Button("Download as PDF");
+        downloadPdfButton.setOnAction(this::handleDownloadPdf);
+
+        VBox root = new VBox(resumeArea, downloadTextButton, downloadPdfButton);
+        Scene scene = new Scene(root, 400, 300);
+
+        primaryStage.setTitle("Resume Viewer");
+        primaryStage.setScene(scene);
+        primaryStage.show();
+    }
+
+    private void handleDownloadText(ActionEvent event) {
+        try {
+            FileChooser fileChooser = new FileChooser();
+            fileChooser.setTitle("Save Resume as Text");
+            fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Text Files", "*.txt"));
+            File file = fileChooser.showSaveDialog(null);
+
+            if (file != null) {
+                FileWriter writer = new FileWriter(file);
+                writer.write(resumeArea.getText());
+                writer.close();
+            }
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+    }
+
+    private void handleDownloadPdf(ActionEvent event) {
+        try {
+            FileChooser fileChooser = new FileChooser();
+            fileChooser.setTitle("Save Resume as PDF");
+            fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("PDF Files", "*.pdf"));
+            File file = fileChooser.showSaveDialog(null);
+
+            if (file != null) {
+                Document document = new Document(PageSize.A4);
+                PdfWriter.getInstance(document, new FileOutputStream(file));
+                document.open();
+                document.add(new Paragraph(resumeArea.getText()));
+                document.close();
+            }
+        } catch (IOException | DocumentException ex) {
+            ex.printStackTrace();
+        }
+    }
+
+}
