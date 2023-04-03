@@ -1,0 +1,53 @@
+package application;
+
+import javafx.application.Application;
+import javafx.geometry.Insets;
+import javafx.scene.Scene;
+import javafx.scene.control.Button;
+import javafx.scene.control.TextArea;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
+import javafx.stage.Stage;
+
+public class Resume extends Application {
+
+    public static void main(String[] args) {
+        launch(args);
+    }
+
+    public void start(Stage primaryStage) {
+        TextArea textArea = new TextArea();
+        textArea.setEditable(false);
+        textArea.setText("Name: John Doe\n" +
+                "Age: 35\n" +
+                "Education: Bachelor's degree in Computer Science\n" +
+                "Work Experience:\n" +
+                "   - Software Developer at XYZ Corporation (5 years)\n" +
+                "   - Technical Lead at ABC Inc. (2 years)\n" +
+                "Skills:\n" +
+                "   - Proficient in Java, Python, and C++\n" +
+                "   - Experience with Spring Framework and Hibernate\n" +
+                "   - Strong problem-solving and analytical skills\n" +
+                "   - Excellent communication and teamwork abilities\n");
+
+        Button educationButton = new Button("Education");
+        Button experienceButton = new Button("Experience");
+        Button skillsButton = new Button("Skills");
+
+        VBox buttonsBox = new VBox(10, educationButton, experienceButton, skillsButton);
+        buttonsBox.setPadding(new Insets(10));
+        buttonsBox.setPrefWidth(120);
+
+        HBox root = new HBox(10, textArea, buttonsBox);
+        root.setPadding(new Insets(10));
+        root.setPrefWidth(600);
+        root.setPrefHeight(600);
+
+        Scene scene = new Scene(root);
+
+        primaryStage.setTitle("Resume");
+        primaryStage.setScene(scene);
+        primaryStage.show();
+    }
+
+}
