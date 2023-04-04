@@ -1,0 +1,212 @@
+package application;
+
+//import com.itextpdf.text.Document;
+//import com.itextpdf.text.DocumentException;
+//import com.itextpdf.text.PageSize;
+//import com.itextpdf.text.Paragraph;
+//import com.itextpdf.text.pdf.PdfWriter;
+import java.io.*;
+import java.net.ServerSocket;
+import java.net.Socket;
+import java.util.Date;
+import javafx.application.*;
+import javafx.event.*;
+import javafx.geometry.Insets;
+import javafx.scene.*;
+import javafx.scene.control.*;
+import javafx.scene.layout.*;
+import javafx.stage.*;
+
+public class ResumeViewer extends Application {
+
+    private TextArea resumeArea;
+    private TextArea coverLetterArea;
+    private TextArea ta;
+    private Button downloadTextButton;
+    private Button downloadPdfButton;
+    private TabPane tabPane;
+    private static final int PORT = 7590;
+    
+    public static void main(String[] args) {
+        launch(args);
+    }
+
+    public void start(Stage primaryStage) {
+        tabPane = new TabPane();
+        Tab resumeTab = new Tab("Resume");
+        resumeTab.setClosable(false);
+        Tab coverLetterTab = new Tab("Cover Letter");
+        coverLetterTab.setClosable(false);
+        
+        resumeArea = new TextArea();
+        resumeArea.setEditable(false);
+        resumeArea.setWrapText(true);
+        resumeArea.setPrefHeight(600);
+        downloadTextButton = new Button("Download as Text ");
+        downloadTextButton.setOnAction(this::handleDownloadText);
+
+        //downloadPdfButton = new Button("Download as PDF");
+        //downloadPdfButton.setOnAction(this::handleDownloadPdf);
+        
+        Button educationButton = new Button("Education");
+        Button experienceButton = new Button("Experience");
+        Button skillsButton = new Button("Skills");
+
+        VBox buttonsBox = new VBox(10, educationButton, experienceButton, skillsButton);
+        buttonsBox.setPadding(new Insets(10));
+        buttonsBox.setPrefWidth(120);
+
+
+        
+        VBox set = new VBox(resumeArea,downloadTextButton);//, downloadPdfButton);
+        
+        HBox root = new HBox(10, set, buttonsBox);       
+        root.setPadding(new Insets(10));
+        root.setPrefWidth(600);
+        root.setPrefHeight(600);
+        resumeTab.setContent(root);
+        
+        VBox set2 = new VBox();
+        //set2.getChildren().add(CoverLetterArea);
+        //CoverLetterArea.setPrefHeight(600);
+        
+        coverLetterArea = new TextArea();
+        coverLetterArea.setWrapText(true);
+        coverLetterArea.setEditable(false);
+        coverLetterArea.setPrefHeight(600);
+        VBox coverLetterContent = new VBox();
+        coverLetterContent.setPadding(new Insets(10));
+        coverLetterContent.setSpacing(10);
+        coverLetterContent.getChildren().addAll(coverLetterArea);
+        coverLetterTab.setContent(coverLetterContent);
+        tabPane.getTabs().addAll(resumeTab, coverLetterTab);
+        
+        
+        Scene scene = new Scene(tabPane, 600, 650);
+        primaryStage.setTitle("Resume Viewer");
+        primaryStage.setScene(scene);
+        primaryStage.show();
+    
+        
+     // set up a socket server to receive messages
+        new Thread(() -> {
+            try (ServerSocket serverSocket = new ServerSocket(PORT)) {
+                while (true) {
+                    Socket socket = serverSocket.accept();
+                    new Thread(() -> {
+                        try {
+                            InputStream inputStream = socket.getInputStream();
+                            DataInputStream dataInputStream = new DataInputStream(inputStream);
+                            
+                            //String message = dataInputStream.readUTF();
+                            int tab = Integer.parseInt(message.substring(0, 1));//---------------------------------------------------------------
+                            String text = message.substring(1);//--------------------------------------------------------------------------------
+                            
+          				  String clientFirstName = dataInputStream.readUTF();
+        				  String clientLastName = dataInputStream.readUTF();
+        				  String clientAddress = dataInputStream.readUTF();//Employer Address
+        				  String clientCity = dataInputStream.readUTF();
+        				  String clientState = dataInputStream.readUTF();
+        				  String clientZipCode = dataInputStream.readUTF();
+        				  String clientPhoneNumber = dataInputStream.readUTF();
+        				  String clientEmail = dataInputStream.readUTF();
+        				  String clientSkills = dataInputStream.readUTF();//coverletter
+        				  String clientExperience = dataInputStream.readUTF();//date
+        				  String clientEducation = dataInputStream.readUTF();//employername
+        				  String client4thSection = dataInputStream.readUTF();//employerposition
+        				  String clientOther = dataInputStream.readUTF();//employercompany
+        				  String clientempty1 = dataInputStream.readUTF();//employerphonenumber
+        				  String clientempty2 = dataInputStream.readUTF();//email
+        				  
+                            ///////////////////////////////////////////////////////////////
+        				  String cclientFirstName = dataInputStream.readUTF();
+        				  String cclientLastName = dataInputStream.readUTF();
+        				  String cclientCity = dataInputStream.readUTF();
+        				  String cclientState = dataInputStream.readUTF();
+        				  String cclientZipCode = dataInputStream.readUTF();
+        				  String cclientPhoneNumber = dataInputStream.readUTF();
+        				  String cclientEmail = dataInputStream.readUTF();
+        				  String address = dataInputStream.readUTF();
+        				  
+        				  String cclientCoverLetter = dataInputStream.readUTF();
+        				  String cclientDate = dataInputStream.readUTF();
+        				  String employerName = dataInputStream.readUTF();
+        				  String employerPosition = dataInputStream.readUTF();
+        				  String employerCompany = dataInputStream.readUTF();
+        				  
+        				  String phoneNumber = dataInputStream.readUTF();
+        				  String email= dataInputStream.readUTF();  
+                            
+                            
+                            if (tab == 1) {
+                            	Platform.runLater(() -> {
+              					  resumeArea.clear();
+            					  resumeArea.appendText(
+            							  clientFirstName + " " + clientLastName + "\n" + clientAddress + "\n" +
+            					  clientCity + ", " + clientState + clientZipCode + "\n" + clientPhoneNumber +"\n" + 
+            									  clientEmail + "\n\n" + 
+            					  "SKILLS" + "\n" + clientSkills + "\n\n" + "EXPERIENCE" + "\n" + clientExperience + "\n\n" +
+            					  "EDUCATION" + "\n" + clientEducation + "\n\n" + client4thSection + "\n" + clientOther
+            							  );
+                            	});
+                                
+                            } else {
+                            	Platform.runLater(() -> {
+              					  coverLetterArea.clear();
+            					  coverLetterArea.appendText(cclientFirstName + " " + cclientLastName + "\n" + cclientEmail
+            							  + " " + cclientPhoneNumber + " " + cclientCity + " " + cclientState + " " + cclientZipCode
+            							  + "\n\n" + cclientDate + "\n\n" + employerName + "\n" + employerPosition + "\n" + 
+            							  employerCompany + "\n" + address + "\n" + phoneNumber + "\n" + email + "\n\n" + cclientCoverLetter
+            							  );
+                            	});
+                            }
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }).start();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }).start();
+        
+    }
+    
+
+    private void handleDownloadText(ActionEvent event) {
+        try {
+            FileChooser fileChooser = new FileChooser();
+            fileChooser.setTitle("Save Resume as Text");
+            fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Text Files", "*.txt"));
+            File file = fileChooser.showSaveDialog(null);
+
+            if (file != null) {
+                FileWriter writer = new FileWriter(file);
+                writer.write(resumeArea.getText());
+                writer.close();
+            }
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+    }
+
+    //private void handleDownloadPdf(ActionEvent event) {
+    //   try {
+    //        FileChooser fileChooser = new FileChooser();
+    //        fileChooser.setTitle("Save Resume as PDF");
+    //        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("PDF Files", "*.pdf"));
+    //        File file = fileChooser.showSaveDialog(null);
+
+    //        if (file != null) {
+    //            Document document = new Document(PageSize.A4);
+    //            PdfWriter.getInstance(document, new FileOutputStream(file));
+    //            document.open();
+    //            document.add(new Paragraph(resumeArea.getText()));
+    //            document.close();
+    //        }
+    //    } catch (IOException | DocumentException ex) {
+    //        ex.printStackTrace();
+    //    }
+    //}
+
+}
