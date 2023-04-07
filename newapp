@@ -1,0 +1,408 @@
+package application;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.net.Socket;
+
+import javafx.application.Application;
+import javafx.geometry.Pos;
+import javafx.scene.Scene;
+import javafx.scene.control.Button;
+import javafx.scene.control.Tab;
+import javafx.scene.control.TabPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
+import javafx.stage.Stage;
+import javafx.application.Application;
+import javafx.geometry.HPos;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
+import javafx.geometry.VPos;
+import javafx.scene.Scene;
+import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox; 
+import javafx.scene.control.Label;
+import javafx.scene.control.Tab;
+import javafx.scene.control.TabPane;
+import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
+import javafx.scene.text.*;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
+import javafx.scene.control.ScrollPane;
+import javafx.stage.Stage;
+
+
+public class MyResumeApp extends Application {
+    private TextField firstNameTextField;
+    private TextField lastNameTextField;
+    private TextField addressTextField;
+    private TextField cityTextField;
+    private TextField stateTextField;
+    private TextField zipCodeTextField;
+    private TextField phoneTextField;
+    private TextField emailTextField;
+    private TextArea skillsTextArea;
+    private TextArea experienceTextArea;
+    private TextArea educationTextArea;
+    private TextArea otherTextArea;
+    private ScrollPane scrolltext;
+    private TextField cfirstNameTextField;
+    private TextField clastNameTextField;
+    private TextField caddressTextField;
+    private TextField ccityTextField;
+    private TextField cstateTextField;
+    private TextField czipCodeTextField;
+    private TextField cphoneTextField;
+    private TextField cemailTextField;
+    private TabPane tabPane;
+    private Tab buttonTab;
+    DataOutputStream toServer = null;
+    DataInputStream fromServer = null;
+    DataOutputStream toServer2 = null;
+    DataInputStream fromServer2 = null;
+    private static final int PORT = 4281;
+    
+    @Override
+    public void start(Stage primaryStage) {
+
+        // Create tabs
+        tabPane = new TabPane();
+        Tab resumeTab = new Tab("Resume");
+        resumeTab.setClosable(false);
+        Tab coverLetterTab = new Tab("Cover Letter");
+        coverLetterTab.setClosable(false);
+        //Tab detailsTab = new Tab("Details");
+
+        // Resume tab
+        // Create grid pane for Resume tab
+        GridPane resumeGridPane = new GridPane();
+        resumeGridPane.setHgap(5);
+        resumeGridPane.setVgap(0);
+        resumeGridPane.setPadding(new Insets(10, 10, 10, 10));
+
+        // Add labels and text fields to Resume tab
+        firstNameTextField = new TextField();
+        firstNameTextField.setPromptText("First Name");
+
+        lastNameTextField = new TextField();
+        lastNameTextField.setPromptText("Last Name");
+        
+        HBox namesTextField = new HBox();
+        namesTextField.getChildren().addAll(firstNameTextField, lastNameTextField);
+        
+        addressTextField = new TextField();
+        addressTextField.setPromptText("Address (123 Your Street)");
+
+        HBox locationTextField = new HBox();
+        
+        cityTextField = new TextField();
+        cityTextField.setPromptText("City");
+
+        stateTextField = new TextField();
+        stateTextField.setPromptText("State");
+
+        zipCodeTextField = new TextField();
+        zipCodeTextField.setPromptText("Zip Code");
+        
+        locationTextField.getChildren().addAll(cityTextField, stateTextField, zipCodeTextField);
+ 
+        phoneTextField = new TextField();
+        phoneTextField.setPromptText("Phone");
+
+        emailTextField = new TextField();
+        emailTextField.setPromptText("Email");
+
+        
+        VBox personalDetails = new VBox();
+        personalDetails.setPadding(new Insets(0, 350, 0, 0));
+        personalDetails.getChildren().addAll(namesTextField, addressTextField, locationTextField, phoneTextField, emailTextField);
+        resumeGridPane.add(personalDetails, 0, 1,5,1);
+        
+        resumeGridPane.add(new Label("SKILLS"), 0, 5);
+        skillsTextArea = new TextArea();
+        skillsTextArea.setPrefHeight(200);
+        skillsTextArea.setWrapText(true);
+        skillsTextArea.setPromptText("- Skill\r- Skill\r- Skill");
+        
+        resumeGridPane.add(skillsTextArea, 0, 6, 5, 1);
+        // Add buttons to Resume tab
+        Button seeDetails1Button = new Button("See Details");
+        seeDetails1Button.setOnAction(e -> openTab("SKILLS"));
+        resumeGridPane.add(seeDetails1Button, 5, 6);
+        resumeGridPane.setHalignment(seeDetails1Button, HPos.RIGHT);
+       
+        resumeGridPane.add(new Label("EXPERIENCE"), 0, 7);
+        experienceTextArea = new TextArea();
+        experienceTextArea.setPrefHeight(200);
+        experienceTextArea.setWrapText(true);
+
+        //experiencePrompt.setStyle(-fx-text-fill:white);
+        experienceTextArea.setPromptText("Company Name, Location - Job Title\r"
+        		+ "MONTH 20XX - MONTH 20XX/ PRESENT\r"
+        		+ "\t- Description of experience.\r"
+        		+ "\t- Description of experience.");
+        resumeGridPane.add(experienceTextArea, 0, 8, 5, 1);
+        // Add buttons to Resume tab
+        Button seeDetails2Button = new Button("See Details");
+        seeDetails2Button.setOnAction(e -> openTab("EXPERIENCE"));
+        resumeGridPane.add(seeDetails2Button, 5, 8);
+        resumeGridPane.setHalignment(seeDetails2Button, HPos.RIGHT);
+       
+        resumeGridPane.add(new Label("EDUCATION"), 0, 9);
+        educationTextArea = new TextArea();
+        educationTextArea.setPrefHeight(200);
+        educationTextArea.setWrapText(true);
+        educationTextArea.setPromptText("School Name, Location - Degree\r"
+        		+ "MONTH 20XX - MONTH 20XX\r"
+        		+ "\t- Description of education.\r"
+        		+ "\t- Description of education.");
+        resumeGridPane.add(educationTextArea, 0, 10, 5, 1);
+        // Add buttons to Resume tab
+        Button seeDetails3Button = new Button("See Details");
+        seeDetails3Button.setOnAction(e -> openTab("EDUCATION"));
+        resumeGridPane.add(seeDetails3Button, 5, 10);
+        resumeGridPane.setHalignment(seeDetails3Button, HPos.RIGHT);
+
+        ComboBox<String> cbo = new ComboBox<>();
+        cbo.getItems().addAll("AWARDS", "PROJECTS", 
+          "EXTRACURRICULAR");
+        cbo.setValue("AWARDS");
+        
+        
+        resumeGridPane.add(cbo, 0, 11);       ///ADD Drop down menu TO CHOOSE ONE OF THE TITLES
+        otherTextArea = new TextArea();
+        otherTextArea.setPrefHeight(200);
+        otherTextArea.setWrapText(true);
+        resumeGridPane.add(otherTextArea, 0, 12, 5, 1);
+        
+        // Add buttons to Resume tab
+        Button seeDetails4Button = new Button("See Details");
+        seeDetails4Button.setOnAction(e -> openTab(cbo.getValue()));
+        resumeGridPane.add(seeDetails4Button, 5, 12);
+        resumeGridPane.setHalignment(seeDetails4Button, HPos.RIGHT);
+        Button submit1 = new Button("Submit");
+        resumeGridPane.add(submit1, 0,13);
+        // Add grid pane to Resume tab
+    
+        resumeTab.setContent(resumeGridPane);
+
+        // Cover Letter tab
+        VBox coverLetterContent = new VBox();
+        coverLetterContent.setPadding(new Insets(10));
+        coverLetterContent.setSpacing(10);
+        HBox coverLetterAddress = new HBox();
+        HBox coverLetterName = new HBox();
+        VBox details = new VBox();
+        
+        cfirstNameTextField = new TextField();
+        cfirstNameTextField.setPromptText("First Name");
+        clastNameTextField = new TextField();
+        clastNameTextField.setPromptText("Last Name");
+        coverLetterName.getChildren().addAll(cfirstNameTextField, clastNameTextField);
+        
+        ccityTextField = new TextField();
+        ccityTextField.setPromptText("City");
+        cstateTextField = new TextField();
+        cstateTextField.setPromptText("State (GA)");
+        czipCodeTextField = new TextField();
+        czipCodeTextField.setPromptText("Zip Code");
+        cphoneTextField = new TextField();
+        cphoneTextField.setPromptText("Phone");
+        cemailTextField = new TextField();
+        cemailTextField.setPromptText("Email");
+        coverLetterAddress.getChildren().addAll(cemailTextField,cphoneTextField,ccityTextField,cstateTextField,czipCodeTextField);
+        
+        details.getChildren().addAll(coverLetterName, coverLetterAddress);
+        
+        TextField dateField = new TextField();
+        dateField.setPromptText("Date (Month Day, 20XX)");
+        TextField employerNameField = new TextField();
+        employerNameField.setPromptText("Employer Name (Mr. John Doe)");
+        TextField employerPositionField = new TextField();
+        employerPositionField.setPromptText("Employer Position");
+        TextField employerCompanyField = new TextField();
+        employerCompanyField.setPromptText("Company/ Organization");
+        TextField addressField = new TextField();
+        addressField.setPromptText("Address (123 Your Street)");
+        TextField phoneNumberField = new TextField();
+        phoneNumberField.setPromptText("Phone");
+        TextField emailField = new TextField();
+        emailField.setPromptText("Email");
+        //emailField.setPrefColumnCount(1);
+        
+        VBox employerDetails = new VBox();
+        employerDetails.getChildren().addAll(employerNameField, employerPositionField, employerCompanyField, 
+        		addressField, phoneNumberField, emailField);
+        employerDetails.setPadding(new Insets(0, 450, 0, 0));
+        
+        VBox dateBox= new VBox();
+        dateBox.getChildren().addAll(dateField);
+        dateBox.setPadding(new Insets(0, 450, 0, 0));
+        TextArea coverLetterTextArea = new TextArea();
+        coverLetterTextArea.setPromptText("Dear Mr. John, \r\rWrite your cover letter here.");
+        coverLetterTextArea.setPrefRowCount(100);
+        coverLetterTextArea.setWrapText(true);
+
+        //coverLetterTextArea.setPrefHeight(200);
+        Button submit2 = new Button("Submit");
+        //submit2.setPadding(new Insets(0, 0, 0, 0));//----------- decrease width by creating a v or hbox
+        coverLetterContent.getChildren().addAll(details, dateBox, employerDetails, coverLetterTextArea,submit2);
+        coverLetterName.setAlignment(Pos.BOTTOM_CENTER);
+        coverLetterTab.setContent(coverLetterContent);
+        TextField emptyMessageTextField = new TextField("ERROR IN SENDING MESSAGE");
+        //emptyMessageTextField.appendText("ERROR IN SENDING MESSAGE");
+        // Add tabs to tab pane
+        tabPane.getTabs().addAll(resumeTab, coverLetterTab);
+        
+        // Create scene and show stage
+        Scene scene = new Scene(tabPane, 700, 650);
+        primaryStage.setScene(scene);
+        primaryStage.setTitle("My Resume App");
+        primaryStage.show();
+        
+        
+        
+        submit1.setOnAction(e -> {
+        	try {
+        		// Send the values to the server
+        		toServer.writeUTF(1 + firstNameTextField.getText().trim());
+        		toServer.writeUTF(1 + lastNameTextField.getText().trim());
+        		toServer.writeUTF(1 + addressTextField.getText().trim());
+        		toServer.writeUTF(1 + cityTextField.getText().trim());
+        		toServer.writeUTF(1 + stateTextField.getText().trim());
+        		toServer.writeUTF(1 + zipCodeTextField.getText().trim());
+        		toServer.writeUTF(1 + phoneTextField.getText().trim());
+        		toServer.writeUTF(1 + emailTextField.getText().trim());
+        		toServer.writeUTF(1 + skillsTextArea.getText().trim());
+        		toServer.writeUTF(1 + experienceTextArea.getText().trim());
+        		toServer.writeUTF(1 + educationTextArea.getText().trim());
+        		toServer.writeUTF(1 + cbo.getValue());
+        		toServer.writeUTF(1 + otherTextArea.getText().trim());
+        		toServer.writeUTF(1 + emptyMessageTextField.getText().trim());
+        		toServer.writeUTF(1 + emptyMessageTextField.getText().trim());
+        		toServer.flush();
+    			
+    			firstNameTextField.clear();
+    			lastNameTextField.clear();
+    			addressTextField.clear();
+    			cityTextField.clear();
+    			stateTextField.clear();
+    			zipCodeTextField.clear();
+    			phoneTextField.clear();
+    			emailTextField.clear();
+    			skillsTextArea.clear();
+    			experienceTextArea.clear();
+    			educationTextArea.clear();
+    			otherTextArea.clear();
+    			
+        		}
+        	catch (IOException ex) {
+        		System.err.println(ex);
+        		}
+        	});
+        
+        submit2.setOnAction(e -> {
+        	try {
+        		// Send the values to the server
+        		toServer.writeUTF(2 + cfirstNameTextField.getText().trim());
+        		toServer.writeUTF(2 + clastNameTextField.getText().trim());
+        		toServer.writeUTF(2 + ccityTextField.getText().trim());
+        		toServer.writeUTF(2 + cstateTextField.getText().trim());
+        		toServer.writeUTF(2 + czipCodeTextField.getText().trim());
+        		toServer.writeUTF(2 + cphoneTextField.getText().trim());
+        		toServer.writeUTF(2 + cemailTextField.getText().trim());
+        		toServer.writeUTF(2 + coverLetterTextArea.getText().trim());
+        		toServer.writeUTF(2 + dateField.getText().trim());
+        		toServer.writeUTF(2 + employerNameField.getText().trim());
+        		toServer.writeUTF(2 + employerPositionField.getText().trim());
+        		toServer.writeUTF(2 + employerCompanyField.getText().trim());
+        		toServer.writeUTF(2 + addressField.getText().trim());
+        		toServer.writeUTF(2 + phoneNumberField.getText().trim());
+        		toServer.writeUTF(2 + emailField.getText().trim());
+        		toServer.flush();
+    			
+        		cfirstNameTextField.clear();
+        		clastNameTextField.clear();
+        		ccityTextField.clear();
+        		cstateTextField.clear();
+        		czipCodeTextField.clear();
+        		cphoneTextField.clear();
+        		cemailTextField.clear();
+        		coverLetterTextArea.clear();
+        		dateField.clear();
+        		employerNameField.clear();
+        		employerPositionField.clear();
+        		employerCompanyField.clear();
+        		addressField.clear();
+        		phoneNumberField.clear();
+        		emailField.clear();
+    			
+        		}
+        	catch (IOException ex) {
+        		System.err.println(ex);
+        		}
+        	});
+        try {
+        	// Create a socket to connect to the server
+        	Socket socket = new Socket("localhost", PORT);   	
+        	fromServer = new DataInputStream(socket.getInputStream());
+        	toServer = new DataOutputStream(socket.getOutputStream());
+        	}
+        catch (IOException ex) {
+        	
+        	}   
+      }
+        
+      
+    
+
+    // method to open a unique tab for a given button text
+    private void openTab(String buttonText) {
+        // check if a tab for this button already exists
+        for (Tab tab : tabPane.getTabs()) {
+            if (tab.getText().equals(buttonText)) {
+                // select the existing tab and return
+                tabPane.getSelectionModel().select(tab);
+                return;
+            }
+            if (tab.getText().equals("AWARDS")||tab.getText().equals("PROJECTS")||tab.getText().equals("EXTRACURRICULAR")) {
+                // select the existing tab and return
+                tabPane.getSelectionModel().select(tab);
+                return;
+            }
+        }
+        // create a new tab and add it to the tab pane
+        Tab newTab = new Tab(buttonText);
+        StackPane tabContent = new StackPane();
+        tabContent.getChildren().add(new Button("This is tab content for " + buttonText));
+        
+        // Details tab
+        VBox detailsContent = new VBox();
+        detailsContent.setPadding(new Insets(10));
+        detailsContent.setSpacing(10);
+        TextField thinTextField = new TextField();
+        thinTextField.setPromptText("Title Text Field");
+        TextArea largeTextArea = new TextArea();
+        largeTextArea.setPromptText("Description Text Field");
+        largeTextArea.setPrefRowCount(100);
+        largeTextArea.setWrapText(true);
+        Button uploadButton = new Button("Upload");
+
+        detailsContent.getChildren().addAll(thinTextField, largeTextArea, uploadButton);
+        newTab.setContent(detailsContent);
+        
+        //newTab.setContent(tabContent);
+        tabPane.getTabs().add(newTab);
+        tabPane.getSelectionModel().select(newTab);
+    }
+    
+    public static void main(String[] args) {
+        launch(args);
+    }
+}
